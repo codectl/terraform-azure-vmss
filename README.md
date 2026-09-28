@@ -1,0 +1,422 @@
+# Virtual Machine Scale Set
+
+This terraform module simplifies the configuration and management of virtual machine scale sets. It offers extensive customization options to match your specific deployment needs, streamlining the provisioning and maintenance process.
+
+## Features
+
+Supports both Linux and Windows VM scale sets
+
+Supports multiple NICs, IP configurations, and data disks
+
+Supports VMSS extensions
+
+Supports managed identities (system-assigned and user-assigned)
+
+Supports autoscaling rules, schedules, and predictive settings
+
+Supports autoscaler multiple profiles
+
+Supports rolling upgrade policy, automatic instance repair, and termination notifications
+
+Supports custom data/user data and gallery applications
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+The following requirements are needed by this module:
+
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.0)
+
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 5.0)
+
+## Providers
+
+The following providers are used by this module:
+
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 5.0)
+
+## Resources
+
+The following resources are used by this module:
+
+- [azurerm_linux_virtual_machine_scale_set.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_virtual_machine_scale_set) (resource)
+- [azurerm_monitor_autoscale_setting.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_autoscale_setting) (resource)
+- [azurerm_orchestrated_virtual_machine_scale_set.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/orchestrated_virtual_machine_scale_set) (resource)
+- [azurerm_virtual_machine_scale_set_extension.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_scale_set_extension) (resource)
+- [azurerm_windows_virtual_machine_scale_set.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine_scale_set) (resource)
+
+## Required Inputs
+
+The following input variables are required:
+
+### <a name="input_virtual_machine_scale_set"></a> [virtual\_machine\_scale\_set](#input\_virtual\_machine\_scale\_set)
+
+Description: Contains all virtual machine scale set configuration
+
+Type:
+
+```hcl
+object({
+    name                                              = string
+    type                                              = string
+    sku                                               = string
+    admin_username                                    = string
+    os_type                                           = optional(string)
+    resource_group_name                               = optional(string)
+    location                                          = optional(string)
+    instances                                         = optional(number)
+    username                                          = optional(string)
+    admin_password                                    = optional(string)
+    computer_name_prefix                              = optional(string)
+    custom_data                                       = optional(string)
+    user_data                                         = optional(string)
+    disable_password_authentication                   = optional(bool)
+    upgrade_mode                                      = optional(string)
+    provision_vm_agent                                = optional(bool)
+    platform_fault_domain_count                       = optional(number)
+    priority                                          = optional(string)
+    secure_boot_enabled                               = optional(bool)
+    vtpm_enabled                                      = optional(bool)
+    zone_balance                                      = optional(bool)
+    zones                                             = optional(list(string))
+    edge_zone                                         = optional(string)
+    encryption_at_host_enabled                        = optional(bool)
+    extension_operations_enabled                      = optional(bool)
+    extensions_time_budget                            = optional(string)
+    overprovision                                     = optional(bool)
+    capacity_reservation_group_id                     = optional(string)
+    do_not_run_extensions_on_overprovisioned_machines = optional(bool)
+    eviction_policy                                   = optional(string)
+    health_probe_id                                   = optional(string)
+    host_group_id                                     = optional(string)
+    max_bid_price                                     = optional(number)
+    proximity_placement_group_id                      = optional(string)
+    network_api_version                               = optional(string)
+    single_placement_group                            = optional(bool)
+    source_image_id                                   = optional(string)
+    priority_mix = optional(object({
+      base_regular_count            = optional(number)
+      regular_percentage_above_base = optional(number)
+    }))
+    sku_profile = optional(object({
+      allocation_strategy = string
+      virtual_machine_sizes = map(object({
+        name = string
+        rank = optional(number)
+      }))
+    }))
+    additional_capabilities = optional(object({
+      ultra_ssd_enabled = optional(bool)
+    }))
+    tags                      = optional(map(string))
+    public_key                = optional(string)
+    automatic_updates_enabled = optional(bool)
+    patch_assessment_mode     = optional(string)
+    patch_mode                = optional(string)
+    hotpatching_enabled       = optional(bool)
+    timezone                  = optional(string)
+    license_type              = optional(string)
+    source_image_reference = optional(object({
+      publisher = string
+      offer     = string
+      sku       = string
+      version   = optional(string, "latest")
+    }))
+    os_disk = object({
+      storage_account_type             = string
+      caching                          = optional(string, "ReadWrite")
+      disk_size_gb                     = optional(number)
+      disk_encryption_set_id           = optional(string)
+      security_encryption_type         = optional(string)
+      write_accelerator_enabled        = optional(bool)
+      secure_vm_disk_encryption_set_id = optional(string)
+    })
+    diff_disk_settings = optional(object({
+      option    = optional(string)
+      placement = optional(string)
+    }))
+    interfaces = map(object({
+      name                                         = optional(string)
+      subnet                                       = string
+      primary                                      = optional(bool)
+      dns_servers                                  = optional(list(string))
+      accelerated_networking_enabled               = optional(bool)
+      ip_forwarding_enabled                        = optional(bool)
+      application_gateway_backend_address_pool_ids = optional(list(string))
+      application_security_group_ids               = optional(list(string))
+      load_balancer_backend_address_pool_ids       = optional(list(string))
+      load_balancer_inbound_nat_rules_ids          = optional(list(string))
+      auxiliary_mode                               = optional(string)
+      auxiliary_sku                                = optional(string)
+      network_security_group_id                    = optional(string)
+      public_ip_address = optional(object({
+        name                    = optional(string)
+        domain_name_label       = optional(string)
+        idle_timeout_in_minutes = optional(number)
+        ip_tags = optional(map(object({
+          type = string
+          tag  = string
+        })), {})
+        public_ip_prefix_id = optional(string)
+        sku_name            = optional(string)
+        version             = optional(string)
+      }))
+      ip_configuration = optional(object({
+        name    = optional(string)
+        version = optional(string)
+      }), {})
+    }))
+    disks = optional(map(object({
+      name                      = optional(string)
+      caching                   = optional(string, "ReadWrite")
+      create_option             = optional(string, "Empty")
+      disk_size_gb              = optional(number)
+      lun                       = number
+      storage_account_type      = optional(string, "Standard_LRS")
+      disk_encryption_set_id    = optional(string)
+      disk_iops_read_write      = optional(number)
+      disk_mbps_read_write      = optional(number)
+      write_accelerator_enabled = optional(bool)
+    })), {})
+    extensions = optional(map(object({
+      name                                = optional(string)
+      publisher                           = string
+      type                                = string
+      type_handler_version                = string
+      settings                            = optional(string)
+      protected_settings                  = optional(string)
+      auto_upgrade_minor_version          = optional(bool)
+      automatic_upgrade_enabled           = optional(bool)
+      failure_suppression_enabled         = optional(bool)
+      provision_after_extensions          = optional(list(string))
+      force_update_tag                    = optional(string)
+      force_extension_execution_on_change = optional(string)
+      protected_settings_from_key_vault = optional(object({
+        secret_url      = string
+        source_vault_id = string
+      }))
+    })), {})
+    boot_diagnostics = optional(object({
+      storage_account_uri = optional(string)
+    }))
+    automatic_instance_repair = optional(object({
+      enabled      = optional(bool)
+      grace_period = optional(string)
+      action       = optional(string)
+    }))
+    automatic_os_upgrade_policy = optional(object({
+      automatic_rollback_enabled   = optional(bool)
+      automatic_os_upgrade_enabled = optional(bool)
+    }))
+    gallery_applications = optional(map(object({
+      version_id             = string
+      configuration_blob_uri = optional(string)
+      order                  = optional(number)
+      tag                    = optional(string)
+    })), {})
+    identity = optional(object({
+      type         = optional(string)
+      identity_ids = optional(list(string))
+      name         = optional(string)
+    }))
+    plan = optional(object({
+      name      = string
+      publisher = string
+      product   = string
+    }))
+    rolling_upgrade_policy = optional(object({
+      cross_zone_upgrades_enabled             = optional(bool)
+      max_batch_instance_percent              = optional(number)
+      max_unhealthy_instance_percent          = optional(number)
+      max_unhealthy_upgraded_instance_percent = optional(number)
+      pause_time_between_batches              = optional(string)
+      prioritize_unhealthy_instances_enabled  = optional(bool)
+      maximum_surge_instances_enabled         = optional(bool)
+    }))
+    resilient_vm_creation_enabled = optional(bool)
+    resilient_vm_deletion_enabled = optional(bool)
+    scale_in = optional(object({
+      rule                   = optional(string)
+      force_deletion_enabled = optional(bool)
+    }))
+    secrets = optional(map(object({
+      key_vault_id = string
+      certificate = object({
+        store = optional(string)
+        url   = string
+      })
+    })), {})
+    spot_restore = optional(object({
+      enabled = optional(bool)
+      timeout = optional(string)
+    }))
+    termination_notification = optional(object({
+      enabled = optional(bool)
+      timeout = optional(string)
+    }))
+    winrm_listener = optional(object({
+      certificate_url = optional(string)
+      protocol        = optional(string)
+    }))
+    additional_unattend_content = optional(object({
+      content = optional(string)
+      setting = optional(string)
+    }))
+    autoscaling = optional(object({
+      enabled = optional(bool)
+      name    = optional(string)
+      notification = optional(object({
+        email = optional(object({
+          send_to_subscription_administrator    = optional(bool)
+          send_to_subscription_co_administrator = optional(bool)
+          custom_emails                         = optional(list(string))
+        }))
+        webhook = optional(list(object({
+          service_uri = string
+          properties  = optional(map(string))
+        })))
+      }))
+      predictive = optional(object({
+        scale_mode      = string
+        look_ahead_time = optional(string)
+      }))
+      profiles = optional(map(object({
+        name = string
+        capacity = object({
+          default = number
+          minimum = number
+          maximum = number
+        })
+        fixed_date = optional(object({
+          end      = string
+          start    = string
+          timezone = optional(string)
+        }))
+        recurrence = optional(object({
+          timezone = optional(string)
+          days     = list(string)
+          hours    = list(number)
+          minutes  = list(number)
+        }))
+        rules = optional(map(object({
+          metric_trigger = object({
+            metric_name        = string
+            metric_resource_id = optional(string)
+            metric_namespace   = optional(string)
+            time_aggregation   = string
+            time_window        = string
+            time_grain         = string
+            operator           = string
+            threshold          = number
+            statistic          = string
+            dimensions = optional(list(object({
+              name     = string
+              operator = string
+              values   = list(string)
+            })))
+            divide_by_instance_count = optional(bool)
+          })
+          scale_action = object({
+            direction = string
+            type      = string
+            value     = string
+            cooldown  = string
+          })
+        })), {})
+      })), {})
+    }))
+  })
+```
+
+## Optional Inputs
+
+The following input variables are optional (have default values):
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: default azure region and can be used if location is not specified inside the object.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+
+Description: default resource group and can be used if resourcegroup is not specified inside the object.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_source_image_reference"></a> [source\_image\_reference](#input\_source\_image\_reference)
+
+Description: Default source image reference configuration to use when not specified at the instance level
+
+Type:
+
+```hcl
+object({
+    publisher = string
+    offer     = string
+    sku       = string
+    version   = optional(string, "latest")
+  })
+```
+
+Default: `null`
+
+### <a name="input_tags"></a> [tags](#input\_tags)
+
+Description: tags to be added to the resources
+
+Type: `map(string)`
+
+Default: `{}`
+
+## Outputs
+
+The following outputs are exported:
+
+### <a name="output_autoscale_settings"></a> [autoscale\_settings](#output\_autoscale\_settings)
+
+Description: contains all monitor autoscale settings config
+
+### <a name="output_extensions"></a> [extensions](#output\_extensions)
+
+Description: contains all virtual machine scale set extensions config
+
+### <a name="output_virtual_machine_scale_set"></a> [virtual\_machine\_scale\_set](#output\_virtual\_machine\_scale\_set)
+
+Description: contains all virtual machine scale set config
+<!-- END_TF_DOCS -->
+
+## Goals
+
+For more information, please see our [goals and non-goals](./GOALS.md).
+
+## Testing
+
+For more information, please see our testing [guidelines](./TESTING.md)
+
+## Notes
+
+Using a dedicated module, we've developed a naming convention for resources that's based on specific regular expressions for each type, ensuring correct abbreviations and offering flexibility with multiple prefixes and suffixes.
+
+Full examples detailing all usages, along with integrations with dependency modules, are located in the examples directory.
+
+To update the module's documentation run `make doc`
+
+## Contributors
+
+We welcome contributions from the community! Whether it's reporting a bug, suggesting a new feature, or submitting a pull request, your input is highly valued.
+
+For more information, please see our contribution [guidelines](./CONTRIBUTING.md).
+
+## License
+
+MIT Licensed. See [LICENSE](./LICENSE) for full details.
+
+## References
+
+- [Documentation](https://learn.microsoft.com/en-us/azure/virtual-machine-scale-sets/)
+- [Rest Api](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-sets)

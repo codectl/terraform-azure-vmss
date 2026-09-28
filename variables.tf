@@ -1,0 +1,330 @@
+variable "virtual_machine_scale_set" {
+  description = "Contains all virtual machine scale set configuration"
+  type = object({
+    name                                              = string
+    type                                              = string
+    sku                                               = string
+    admin_username                                    = string
+    os_type                                           = optional(string)
+    resource_group_name                               = optional(string)
+    location                                          = optional(string)
+    instances                                         = optional(number)
+    username                                          = optional(string)
+    admin_password                                    = optional(string)
+    computer_name_prefix                              = optional(string)
+    custom_data                                       = optional(string)
+    user_data                                         = optional(string)
+    disable_password_authentication                   = optional(bool)
+    upgrade_mode                                      = optional(string)
+    provision_vm_agent                                = optional(bool)
+    platform_fault_domain_count                       = optional(number)
+    priority                                          = optional(string)
+    secure_boot_enabled                               = optional(bool)
+    vtpm_enabled                                      = optional(bool)
+    zone_balance                                      = optional(bool)
+    zones                                             = optional(list(string))
+    edge_zone                                         = optional(string)
+    encryption_at_host_enabled                        = optional(bool)
+    extension_operations_enabled                      = optional(bool)
+    extensions_time_budget                            = optional(string)
+    overprovision                                     = optional(bool)
+    capacity_reservation_group_id                     = optional(string)
+    do_not_run_extensions_on_overprovisioned_machines = optional(bool)
+    eviction_policy                                   = optional(string)
+    health_probe_id                                   = optional(string)
+    host_group_id                                     = optional(string)
+    max_bid_price                                     = optional(number)
+    proximity_placement_group_id                      = optional(string)
+    network_api_version                               = optional(string)
+    single_placement_group                            = optional(bool)
+    source_image_id                                   = optional(string)
+    priority_mix = optional(object({
+      base_regular_count            = optional(number)
+      regular_percentage_above_base = optional(number)
+    }))
+    sku_profile = optional(object({
+      allocation_strategy = string
+      virtual_machine_sizes = map(object({
+        name = string
+        rank = optional(number)
+      }))
+    }))
+    additional_capabilities = optional(object({
+      ultra_ssd_enabled = optional(bool)
+    }))
+    tags                      = optional(map(string))
+    public_key                = optional(string)
+    automatic_updates_enabled = optional(bool)
+    patch_assessment_mode     = optional(string)
+    patch_mode                = optional(string)
+    hotpatching_enabled       = optional(bool)
+    timezone                  = optional(string)
+    license_type              = optional(string)
+    source_image_reference = optional(object({
+      publisher = string
+      offer     = string
+      sku       = string
+      version   = optional(string, "latest")
+    }))
+    os_disk = object({
+      storage_account_type             = string
+      caching                          = optional(string, "ReadWrite")
+      disk_size_gb                     = optional(number)
+      disk_encryption_set_id           = optional(string)
+      security_encryption_type         = optional(string)
+      write_accelerator_enabled        = optional(bool)
+      secure_vm_disk_encryption_set_id = optional(string)
+    })
+    diff_disk_settings = optional(object({
+      option    = optional(string)
+      placement = optional(string)
+    }))
+    interfaces = map(object({
+      name                                         = optional(string)
+      subnet                                       = string
+      primary                                      = optional(bool)
+      dns_servers                                  = optional(list(string))
+      accelerated_networking_enabled               = optional(bool)
+      ip_forwarding_enabled                        = optional(bool)
+      application_gateway_backend_address_pool_ids = optional(list(string))
+      application_security_group_ids               = optional(list(string))
+      load_balancer_backend_address_pool_ids       = optional(list(string))
+      load_balancer_inbound_nat_rules_ids          = optional(list(string))
+      auxiliary_mode                               = optional(string)
+      auxiliary_sku                                = optional(string)
+      network_security_group_id                    = optional(string)
+      public_ip_address = optional(object({
+        name                    = optional(string)
+        domain_name_label       = optional(string)
+        idle_timeout_in_minutes = optional(number)
+        ip_tags = optional(map(object({
+          type = string
+          tag  = string
+        })), {})
+        public_ip_prefix_id = optional(string)
+        sku_name            = optional(string)
+        version             = optional(string)
+      }))
+      ip_configuration = optional(object({
+        name    = optional(string)
+        version = optional(string)
+      }), {})
+    }))
+    disks = optional(map(object({
+      name                      = optional(string)
+      caching                   = optional(string, "ReadWrite")
+      create_option             = optional(string, "Empty")
+      disk_size_gb              = optional(number)
+      lun                       = number
+      storage_account_type      = optional(string, "Standard_LRS")
+      disk_encryption_set_id    = optional(string)
+      disk_iops_read_write      = optional(number)
+      disk_mbps_read_write      = optional(number)
+      write_accelerator_enabled = optional(bool)
+    })), {})
+    extensions = optional(map(object({
+      name                                = optional(string)
+      publisher                           = string
+      type                                = string
+      type_handler_version                = string
+      settings                            = optional(string)
+      protected_settings                  = optional(string)
+      auto_upgrade_minor_version          = optional(bool)
+      automatic_upgrade_enabled           = optional(bool)
+      failure_suppression_enabled         = optional(bool)
+      provision_after_extensions          = optional(list(string))
+      force_update_tag                    = optional(string)
+      force_extension_execution_on_change = optional(string)
+      protected_settings_from_key_vault = optional(object({
+        secret_url      = string
+        source_vault_id = string
+      }))
+    })), {})
+    boot_diagnostics = optional(object({
+      storage_account_uri = optional(string)
+    }))
+    automatic_instance_repair = optional(object({
+      enabled      = optional(bool)
+      grace_period = optional(string)
+      action       = optional(string)
+    }))
+    automatic_os_upgrade_policy = optional(object({
+      automatic_rollback_enabled   = optional(bool)
+      automatic_os_upgrade_enabled = optional(bool)
+    }))
+    gallery_applications = optional(map(object({
+      version_id             = string
+      configuration_blob_uri = optional(string)
+      order                  = optional(number)
+      tag                    = optional(string)
+    })), {})
+    identity = optional(object({
+      type         = optional(string)
+      identity_ids = optional(list(string))
+      name         = optional(string)
+    }))
+    plan = optional(object({
+      name      = string
+      publisher = string
+      product   = string
+    }))
+    rolling_upgrade_policy = optional(object({
+      cross_zone_upgrades_enabled             = optional(bool)
+      max_batch_instance_percent              = optional(number)
+      max_unhealthy_instance_percent          = optional(number)
+      max_unhealthy_upgraded_instance_percent = optional(number)
+      pause_time_between_batches              = optional(string)
+      prioritize_unhealthy_instances_enabled  = optional(bool)
+      maximum_surge_instances_enabled         = optional(bool)
+    }))
+    resilient_vm_creation_enabled = optional(bool)
+    resilient_vm_deletion_enabled = optional(bool)
+    scale_in = optional(object({
+      rule                   = optional(string)
+      force_deletion_enabled = optional(bool)
+    }))
+    secrets = optional(map(object({
+      key_vault_id = string
+      certificate = object({
+        store = optional(string)
+        url   = string
+      })
+    })), {})
+    spot_restore = optional(object({
+      enabled = optional(bool)
+      timeout = optional(string)
+    }))
+    termination_notification = optional(object({
+      enabled = optional(bool)
+      timeout = optional(string)
+    }))
+    winrm_listener = optional(object({
+      certificate_url = optional(string)
+      protocol        = optional(string)
+    }))
+    additional_unattend_content = optional(object({
+      content = optional(string)
+      setting = optional(string)
+    }))
+    autoscaling = optional(object({
+      enabled = optional(bool)
+      name    = optional(string)
+      notification = optional(object({
+        email = optional(object({
+          send_to_subscription_administrator    = optional(bool)
+          send_to_subscription_co_administrator = optional(bool)
+          custom_emails                         = optional(list(string))
+        }))
+        webhook = optional(list(object({
+          service_uri = string
+          properties  = optional(map(string))
+        })))
+      }))
+      predictive = optional(object({
+        scale_mode      = string
+        look_ahead_time = optional(string)
+      }))
+      profiles = optional(map(object({
+        name = string
+        capacity = object({
+          default = number
+          minimum = number
+          maximum = number
+        })
+        fixed_date = optional(object({
+          end      = string
+          start    = string
+          timezone = optional(string)
+        }))
+        recurrence = optional(object({
+          timezone = optional(string)
+          days     = list(string)
+          hours    = list(number)
+          minutes  = list(number)
+        }))
+        rules = optional(map(object({
+          metric_trigger = object({
+            metric_name        = string
+            metric_resource_id = optional(string)
+            metric_namespace   = optional(string)
+            time_aggregation   = string
+            time_window        = string
+            time_grain         = string
+            operator           = string
+            threshold          = number
+            statistic          = string
+            dimensions = optional(list(object({
+              name     = string
+              operator = string
+              values   = list(string)
+            })))
+            divide_by_instance_count = optional(bool)
+          })
+          scale_action = object({
+            direction = string
+            type      = string
+            value     = string
+            cooldown  = string
+          })
+        })), {})
+      })), {})
+    }))
+  })
+
+  validation {
+    condition     = contains(["windows", "linux", "flex"], var.virtual_machine_scale_set.type)
+    error_message = "The instance type must be either 'windows', 'linux', or 'flex'."
+  }
+
+  validation {
+    condition     = lookup(var.virtual_machine_scale_set, "location", null) != null || var.location != null
+    error_message = "location must be set on var.virtual_machine_scale_set.location or on the module-level var.location."
+  }
+
+  validation {
+    condition     = lookup(var.virtual_machine_scale_set, "resource_group_name", null) != null || var.resource_group_name != null
+    error_message = "resource_group_name must be set on var.virtual_machine_scale_set.resource_group_name or on the module-level var.resource_group_name."
+  }
+
+  validation {
+    condition = (
+      var.virtual_machine_scale_set.type == "linux" ? (
+        var.virtual_machine_scale_set.public_key != null || var.virtual_machine_scale_set.admin_password != null
+        ) : var.virtual_machine_scale_set.type == "flex" ? (
+        var.virtual_machine_scale_set.public_key != null || var.virtual_machine_scale_set.admin_password != null || var.virtual_machine_scale_set.os_type == "windows"
+        ) : (
+        var.virtual_machine_scale_set.admin_password != null
+      )
+    )
+    error_message = "For Linux/Flex VMSS, either 'public_key' or 'admin_password' must be provided. For Windows VMSS, 'admin_password' must be provided."
+  }
+}
+
+variable "location" {
+  description = "default azure region and can be used if location is not specified inside the object."
+  type        = string
+  default     = null
+}
+
+variable "resource_group_name" {
+  description = "default resource group and can be used if resourcegroup is not specified inside the object."
+  type        = string
+  default     = null
+}
+
+variable "tags" {
+  description = "tags to be added to the resources"
+  type        = map(string)
+  default     = {}
+}
+
+variable "source_image_reference" {
+  description = "Default source image reference configuration to use when not specified at the instance level"
+  type = object({
+    publisher = string
+    offer     = string
+    sku       = string
+    version   = optional(string, "latest")
+  })
+  default = null
+}

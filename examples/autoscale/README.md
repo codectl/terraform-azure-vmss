@@ -1,0 +1,1 @@
+This deploys a virtual machine scale set with autoscaling capabilities.
