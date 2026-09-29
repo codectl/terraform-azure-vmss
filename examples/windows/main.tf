@@ -1,25 +1,34 @@
 module "naming" {
-  source  = "cloudnationhq/naming/azure"
-  version = "~> 0.26"
+  source  = "codectl/naming/azure"
+  version = "~> 0.1"
 
   suffix = ["demo"]
 }
 
+module "regions" {
+  source  = "codectl/locations/azure"
+  version = "~> 1.0"
+
+  location = {
+    primary = "westeurope"
+  }
+}
+
 module "rg" {
-  source  = "cloudnationhq/rg/azure"
-  version = "~> 3.0"
+  source  = "codectl/rg/azure"
+  version = "~> 1.0"
 
   groups = {
     demo = {
       name     = module.naming.resource_group.name_unique
-      location = "westeurope"
+      location = module.regions.location.primary.name
     }
   }
 }
 
 module "network" {
-  source  = "cloudnationhq/vnet/azure"
-  version = "~> 10.0"
+  source  = "codectl/vnet/azure"
+  version = "~> 1.0"
 
   vnet = {
     name                = module.naming.virtual_network.name
@@ -36,8 +45,8 @@ module "network" {
 }
 
 module "kv" {
-  source  = "cloudnationhq/kv/azure"
-  version = "~> 6.0"
+  source  = "codectl/kv/azure"
+  version = "~> 1.0"
 
   vault = {
     name                = module.naming.key_vault.name_unique
@@ -55,8 +64,8 @@ module "kv" {
 }
 
 module "scaleset" {
-  source  = "cloudnationhq/vmss/azure"
-  version = "~> 4.0"
+  source  = "codectl/vmss/azure"
+  version = "~> 1.0"
 
   virtual_machine_scale_set = {
     sku            = "Standard_DS1_v2"
